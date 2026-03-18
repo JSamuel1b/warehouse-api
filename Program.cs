@@ -17,6 +17,16 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<TokenProvider>();
 builder.Services.AddHttpContextAccessor();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(configurations.GetConnectionString("DefaultConnection"));
@@ -56,6 +66,8 @@ var app = builder.Build();
 
     app.UseSwaggerUI();
 //}
+
+app.UseCors();
 
 app.UseHttpsRedirection();
 
