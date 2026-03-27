@@ -19,11 +19,21 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
+    options.AddPolicy("WerehouseApp", policy =>
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+        policy.WithOrigins(
+            "http://localhost:8081", "https://localhost:8081",
+            "http://localhost:8082", "https://localhost:8082",
+            "http://localhost:8083", "https://localhost:8083",
+            "http://localhost:8084", "https://localhost:8084",
+            "http://localhost:8085", "https://localhost:8085",
+            "http://localhost:8086", "https://localhost:8086",
+            "http://localhost:8087", "https://localhost:8087",
+            "http://localhost:8088", "https://localhost:8088",
+            "http://localhost:8089", "https://localhost:8089")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
     });
 });
 
@@ -67,9 +77,9 @@ var app = builder.Build();
     app.UseSwaggerUI();
 //}
 
-app.UseCors();
-
 app.UseHttpsRedirection();
+
+app.UseCors("WerehouseApp");
 
 app.UseAuthentication();
 

@@ -17,6 +17,9 @@ namespace werehouse_api.Data
         public DbSet<InventoryItem> InventoryItems { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<ToolCategory> ToolCategories { get; set; }
+        public DbSet<Tool> Tools { get; set; }
+        public DbSet<ToolHistory> ToolHistories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -70,6 +73,20 @@ namespace werehouse_api.Data
                 new InventoryItem() { Id = 32, Location = "A1-03B-03", SKU = "PP328", Name = "Napkin, Luncheon White Paper 12PK/CS Napkin, Luncheon White Paper 12PK/CS Napkin, Luncheon White Paper 12PK/CS", Stock = 10, Unit = "Unit" },
                 new InventoryItem() { Id = 33, Location = "A1-03A-01", SKU = "PP320", Name = "WypAll, All-Purpose Wipes, White (Each Pack", Stock = 10, Unit = "Unit" },
                 new InventoryItem() { Id = 34, Location = "A1-03A-02", SKU = "PP315", Name = "WypAll, Wipes Kimberly-Clark (Each Box", Stock = 10, Unit = "Unit" }
+                ]);
+
+            modelBuilder.Entity<ToolCategory>().HasData([
+                new ToolCategory() { Id = 1, Name = "Hand Tools", IsActive = true },
+                new ToolCategory() { Id = 2, Name = "Power Tools" , IsActive = true },
+                new ToolCategory() { Id = 3, Name = "Safety" , IsActive = true },
+                new ToolCategory() { Id = 4, Name = "Ladders" , IsActive = true }
+                ]);
+
+            modelBuilder.Entity<Tool>().HasData([
+                new Tool() { Id = 1, Name = "Impact Drill (DeWalt)", ToolCategoryId = 2, Status = "available" },
+                new Tool() { Id = 2, Name = "Angle Grinder", ToolCategoryId = 2, Status = "available" },
+                new Tool() { Id = 3, Name = "Ladder 6ft", ToolCategoryId = 4, Status = "available" },
+                new Tool() { Id = 4, Name = "Safety Harness", ToolCategoryId = 3, Status = "available" }
                 ]);
         }
     }
