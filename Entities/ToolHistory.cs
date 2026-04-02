@@ -23,5 +23,10 @@ namespace werehouse_api.Entities
         [MaxLength(100)]
         public string? BorrowerUserUsername { get; set; }
         public User? BorrowerUser { get; set; }
+        public bool? IsKioskCheckout { get; set; }
+        [MaxLength(100)]
+        public string? KioskId { get; set; }
+        [MaxLength(150)]
+        public string? KioskName { get; set; }
     }
 }

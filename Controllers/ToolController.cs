@@ -46,6 +46,9 @@ namespace werehouse_api.Controllers
                     DueAt = x.DueAt,
                     LocationOfUse = x.LocationOfUse,
                     ExpectedDuration = x.ExpectedDuration,
+                    IsKioskCheckout = x.IsKioskCheckout,
+                    KioskId = x.KioskId,
+                    KioskName = x.KioskName,
                     Histories = x.ToolHistories.Select(h => new ToolHistoryDto()
                     {
                         Id = h.Id,
@@ -60,7 +63,10 @@ namespace werehouse_api.Controllers
                         StaffUserName = h.StaffUser != null ? $"{h.StaffUser.FirstName} {h.StaffUser.LastName}" : null,
                         BorrowerUserUsername = h.BorrowerUserUsername,
                         BorrowerName = h.BorrowerUser != null ? $"{h.BorrowerUser.FirstName} {h.BorrowerUser.LastName}" : null,
-                        Clean = h.Clean
+                        Clean = h.Clean,
+                        IsKioskCheckout = h.IsKioskCheckout,
+                        KioskId = h.KioskId,
+                        KioskName = h.KioskName
                     }).ToList()
                 }).ToList();
 
@@ -84,25 +90,38 @@ namespace werehouse_api.Controllers
                     return NotFound(new Response<string>() { Message = $"Tool with id {request.Id} not found.", Succeded = false });
                 }
 
+                var history = new ToolHistory();
+
+                if (request.IsKioskCheckout)
+                {
+                    tool.KioskId = request.KioskId;
+                    tool.KioskName = request.KioskName;
+                    tool.KioskId = request.KioskId;
+
+                    history.KioskId = request.KioskId;
+                    history.KioskName = request.KioskName;
+                }
+                else
+                {
+                    history.ByUserUsername = request.CurrentHolderUsername;
+                    tool.CurrentHolderUsername = request.CurrentHolderUsername;
+                }
+
                 tool.Status = "checkout";
-                tool.CurrentHolderUsername = request.CurrentHolderUsername;
+                tool.IsKioskCheckout = request.IsKioskCheckout;
                 tool.OwnerUsername = request.OwnerUsername;
                 tool.CheckedOutAt = request.CheckedOutAt;
                 tool.DueAt = request.DueAt;
                 tool.LocationOfUse = request.LocationOfUse;
                 tool.ExpectedDuration = request.ExpectedDuration;
 
-                var hitory = new ToolHistory()
-                {
-                    ToolId = request.Id,
-                    Type = "checkout",
-                    At = request.CheckedOutAt,
-                    ByUserUsername = request.CurrentHolderUsername,
-                    LocationOfUse = request.LocationOfUse,
-                    ExpectedDuration = request.ExpectedDuration,
-                };
+                history.ToolId = request.Id;
+                history.Type = "checkout";
+                history.At = request.CheckedOutAt;
+                history.LocationOfUse = request.LocationOfUse;
+                history.ExpectedDuration = request.ExpectedDuration;
 
-                _context.ToolHistories.Add(hitory);
+                _context.ToolHistories.Add(history);
                 await _context.SaveChangesAsync();
 
                 return Ok(new Response<bool>(true));
@@ -127,13 +146,21 @@ namespace werehouse_api.Controllers
 
                 tool.Status = "return_pending";
 
-                var history = new ToolHistory()
+                var history = new ToolHistory();
+
+                if (!string.IsNullOrEmpty(request.KioskId))
                 {
-                    ToolId = request.ToolId,
-                    Type = "return_initiated",
-                    At = request.At,
-                    ByUserUsername = request.ByUsername,
-                };
+                    history.KioskId = request.KioskId;
+                    history.KioskName = request.KioskName;
+                }
+                else
+                {
+                    history.ByUserUsername = request.ByUsername;
+                }
+
+                history.ToolId = request.ToolId;
+                history.Type = "return_initiated";
+                history.At = request.At;
 
                 _context.ToolHistories.Add(history);
                 await _context.SaveChangesAsync();
@@ -175,7 +202,10 @@ namespace werehouse_api.Controllers
                 tool.OwnerUsername = null;
                 tool.LocationOfUse = null;
                 tool.ExpectedDuration = null;
-                
+                tool.IsKioskCheckout = null;
+                tool.KioskId = null;
+                tool.KioskName = null;
+
                 _context.ToolHistories.Add(history);
                 await _context.SaveChangesAsync();
 

@@ -21,6 +21,11 @@ namespace werehouse_api.Entities
         public DateTime? DueAt { get; set; }
         public string? LocationOfUse { get; set; }
         public string? ExpectedDuration { get; set; }
+        public bool? IsKioskCheckout { get; set; }
+        [MaxLength(100)]
+        public string? KioskId { get; set; }
+        [MaxLength(150)]
+        public string? KioskName { get; set; }
         public List<ToolHistory> ToolHistories { get; set; }
     }
 }

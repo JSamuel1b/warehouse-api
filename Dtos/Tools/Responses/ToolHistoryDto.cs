@@ -16,5 +16,8 @@ namespace werehouse_api.Dtos.Tools.Responses
         public string? StaffUserName { get; set; }
         public string? BorrowerUserUsername { get; set; }
         public string? BorrowerName { get; set; }
+        public bool? IsKioskCheckout { get; set; }
+        public string? KioskId { get; set; }
+        public string? KioskName { get; set; }
     }
 }

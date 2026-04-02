@@ -34,7 +34,8 @@ namespace werehouse_api.Controllers
                         FirstName = x.FirstName,
                         LastName = x.LastName,
                         IsActive = x.IsActive,
-                        Username = x.Username
+                        Username = x.Username,
+                        DepartmentPinCode = x.Department != null ? x.Department.PinCode : null
                     })
                     .ToListAsync();
 

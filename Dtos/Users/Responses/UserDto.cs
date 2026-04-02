@@ -11,5 +11,6 @@ namespace werehouse_api.Dtos.Users.Responses
         public string RoleName { get; set; }
         public int? DepartmentId { get; set; }
         public string? DepartmentName { get; set; }
+        public string? DepartmentPinCode { get; set; }
     }
 }
