@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using werehouse_api.Auth;
 using werehouse_api.Data;
 using werehouse_api.Dtos.Tools.Requests;
 using werehouse_api.Dtos.Tools.Responses;
@@ -18,10 +19,15 @@ namespace werehouse_api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetTools()
+        public async Task<IActionResult> GetTools([FromHeader] string secretKey)
         {
             try
             {
+                if (secretKey != StringConstants.SecretKey)
+                {
+                    return Unauthorized(new Response<string>() { Message = "Unauthorized", Succeded = false });
+                }
+
                 var tools = await _context.Tools
                     .Include(t => t.ToolCategory)
                     .Include(x => x.Owner).ThenInclude(d => d.Department)
@@ -79,10 +85,15 @@ namespace werehouse_api.Controllers
         }
 
         [HttpPost("CheckOut")]
-        public async Task<IActionResult> CheckOutTool([FromBody] CheckOutToolDto request)
+        public async Task<IActionResult> CheckOutTool([FromBody] CheckOutToolDto request, [FromHeader] string secretKey)
         {
             try
             {
+                if (secretKey != StringConstants.SecretKey)
+                {
+                    return Unauthorized(new Response<string>() { Message = "Unauthorized", Succeded = false });
+                }
+
                 var tool = await _context.Tools.FirstOrDefaultAsync(x => x.Id == request.Id);
 
                 if (tool == null)
@@ -133,10 +144,15 @@ namespace werehouse_api.Controllers
         }
 
         [HttpPut("InitiateReturn")]
-        public async Task<IActionResult> InitiateToolReturn([FromBody] InitiateReturnDto request)
+        public async Task<IActionResult> InitiateToolReturn([FromBody] InitiateReturnDto request, [FromHeader] string secretKey)
         {
             try
             {
+                if (secretKey != StringConstants.SecretKey)
+                {
+                    return Unauthorized(new Response<string>() { Message = "Unauthorized", Succeded = false });
+                }
+
                 var tool = await _context.Tools.FirstOrDefaultAsync(x => x.Id == request.ToolId);
 
                 if (tool == null)
@@ -174,10 +190,15 @@ namespace werehouse_api.Controllers
         }
 
         [HttpPut("ConfirmReturn")]
-        public async Task<IActionResult> ConfirmReturnTool([FromBody] ConfirmToolReturnDto request)
+        public async Task<IActionResult> ConfirmReturnTool([FromBody] ConfirmToolReturnDto request, [FromHeader] string secretKey)
         {
             try
             {
+                if (secretKey != StringConstants.SecretKey)
+                {
+                    return Unauthorized(new Response<string>() { Message = "Unauthorized", Succeded = false });
+                }
+
                 var tool = await _context.Tools.FirstOrDefaultAsync(x => x.Id == request.ToolId);
 
                 if (tool == null)

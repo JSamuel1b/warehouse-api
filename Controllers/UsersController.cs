@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using werehouse_api.Auth;
 using werehouse_api.Data;
 using werehouse_api.Dtos.Users.Responses;
 using werehouse_api.Enums;
@@ -17,10 +18,15 @@ namespace werehouse_api.Controllers
         }
 
         [HttpGet("DeptHeads")]
-        public async Task<IActionResult> GetDepartmentHeads()
+        public async Task<IActionResult> GetDepartmentHeads([FromHeader] string secretKey)
         {
             try
             {
+                if (secretKey != StringConstants.SecretKey)
+                {
+                    return Unauthorized(new Response<string>() { Message = "Unauthorized", Succeded = false });
+                }
+
                 var deptHeads = await _context.Users
                     .Include(u => u.Department)
                     .Include(u => u.Role)

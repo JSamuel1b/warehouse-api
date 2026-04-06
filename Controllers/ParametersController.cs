@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using werehouse_api.Auth;
 using werehouse_api.Data;
 using werehouse_api.Entities;
 using werehouse_api.Wrappers;
@@ -16,10 +17,15 @@ namespace werehouse_api.Controllers
         }
 
         [HttpGet("Departments")]
-        public async Task<IActionResult> GetDepartments()
+        public async Task<IActionResult> GetDepartments([FromHeader] string secretKey)
         {
             try
             {
+                if (secretKey != StringConstants.SecretKey)
+                {
+                    return Unauthorized(new Response<string>() { Message = "Unauthorized", Succeded = false });
+                }
+
                 var departments = await _context.Departments.ToListAsync();
 
                 return Ok(new Response<List<Department>>(departments));
@@ -31,10 +37,15 @@ namespace werehouse_api.Controllers
         }
 
         [HttpGet("Roles")]
-        public async Task<IActionResult> GetRoles()
+        public async Task<IActionResult> GetRoles([FromHeader] string secretKey)
         {
             try
             {
+                if (secretKey != StringConstants.SecretKey)
+                {
+                    return Unauthorized(new Response<string>() { Message = "Unauthorized", Succeded = false });
+                }
+
                 var roles = await _context.Roles.ToListAsync();
 
                 return Ok(new Response<List<Role>>(roles));

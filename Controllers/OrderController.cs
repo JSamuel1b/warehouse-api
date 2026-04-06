@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using werehouse_api.Auth;
 using werehouse_api.Data;
 using werehouse_api.Dtos.Orders.Requests;
 using werehouse_api.Dtos.Orders.Responses;
@@ -9,6 +10,7 @@ using werehouse_api.Wrappers;
 
 namespace werehouse_api.Controllers
 {
+    [Authorize]
     public class OrderController : BaseControllerApi
     {
         private readonly ApplicationDbContext _context;
@@ -151,11 +153,17 @@ namespace werehouse_api.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> CreateOrder([FromBody] CreateOrderDto request)
+        public async Task<IActionResult> CreateOrder([FromBody] CreateOrderDto request, [FromHeader] string secretKey)
         {
             try
             {
+                if (secretKey != StringConstants.SecretKey)
+                {
+                    return Unauthorized(new Response<string>() { Message = "Unauthorized", Succeded = false });
+                }
+
                 var newOrder = new Order();
 
                 newOrder.CreatedAt = request.CreatedAt;
